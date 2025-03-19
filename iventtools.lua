@@ -1,3 +1,5 @@
+require('lib.moonloader')
+require('lib.sampfuncs')
 script_name("IventTools")
 script_name("moonloader-script-updater-example")
 script_url("https://github.com/qrlk/moonloader-script-updater")
@@ -11,15 +13,13 @@ if enable_autoupdate then
     if updater_loaded then
         autoupdate_loaded, Update = pcall(Updater)
         if autoupdate_loaded then
-            Update.json_url = "https://raw.githubusercontent.com/qrlk/moonloader-script-updater/master/minified-example.json?" .. tostring(os.clock())
+            Update.json_url = "https://raw.githubusercontent.com/dim4ik-sen/iventools/refs/heads/main/iventtools.json" .. tostring(os.clock())
             Update.prefix = "[" .. string.upper(thisScript().name) .. "]: "
-            Update.url = "https://github.com/qrlk/moonloader-script-updater/"
+            Update.url = "https://github.com/dim4ik-sen/iventools/"
         end
     end
 end
 
-require('lib.moonloader')
-require('lib.sampfuncs')
 local sampev = require 'lib.samp.events'
 local requests = require 'requests';
 local inicfg = require 'inicfg'
@@ -444,6 +444,10 @@ local targetAnimId = {1745, 1778, 1811, 1488, 407, 411, 945, 41, 1260, 1189, 111
 function main()
     if not isSampLoaded() or not isSampfuncsLoaded() then return end
 	while not isSampAvailable() do wait(100) end
+
+  if autoupdate_loaded and enable_autoupdate and Update then
+    pcall(Update.check, Update.json_url, Update.prefix, Update.url)
+  end
 
     if not doesFileExist("moonloader\\config\\mpConf.ini") then
     local data =
