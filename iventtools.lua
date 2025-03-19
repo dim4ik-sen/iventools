@@ -13,7 +13,6 @@ encoding.default = 'CP1251'
 imgui.ToggleButton = require('imgui_addons').ToggleButton
 u8 = encoding.UTF8
 
--- https://github.com/qrlk/moonloader-script-updater
 local enable_autoupdate = true -- false to disable auto-update + disable sending initial telemetry (server, moonloader version, script version, samp nickname, virtual volume serial number)
 local autoupdate_loaded = false
 local Update = nil
@@ -22,9 +21,9 @@ if enable_autoupdate then
     if updater_loaded then
         autoupdate_loaded, Update = pcall(Updater)
         if autoupdate_loaded then
-            Update.json_url = "https://raw.githubusercontent.com/qrlk/moonloader-script-updater/master/minified-example.json?" .. tostring(os.clock())
+            Update.json_url = "https://raw.githubusercontent.com/dim4ik-sen/iventools/refs/heads/main/minified-example.json" .. tostring(os.clock())
             Update.prefix = "[" .. string.upper(thisScript().name) .. "]: "
-            Update.url = "https://github.com/qrlk/moonloader-script-updater/"
+            Update.url = "https://github.com/dim4ik-sen/iventools"
         end
     end
 end
