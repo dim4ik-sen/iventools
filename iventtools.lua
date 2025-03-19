@@ -1,6 +1,6 @@
 script_name("IventTools")
 script_author("Crispalka")
-script_version("1.5")
+script_version("1.3")
 
 require('lib.moonloader')
 require('lib.sampfuncs')
@@ -13,20 +13,8 @@ encoding.default = 'CP1251'
 imgui.ToggleButton = require('imgui_addons').ToggleButton
 u8 = encoding.UTF8
 
-local enable_autoupdate = true -- false to disable auto-update + disable sending initial telemetry (server, moonloader version, script version, samp nickname, virtual volume serial number)
-local autoupdate_loaded = true
-local Update = nil
-if enable_autoupdate then
-    local updater_loaded, Updater = pcall(loadstring, [[return {check=function (a,b,c) local d=require('moonloader').download_status;local e=os.tmpname()local f=os.clock()if doesFileExist(e)then os.remove(e)end;downloadUrlToFile(a,e,function(g,h,i,j)if h==d.STATUSEX_ENDDOWNLOAD then if doesFileExist(e)then local k=io.open(e,'r')if k then local l=decodeJson(k:read('*a'))updatelink=l.updateurl;updateversion=l.latest;k:close()os.remove(e)if updateversion~=thisScript().version then lua_thread.create(function(b)local d=require('moonloader').download_status;local m=-1;sampAddChatMessage(b..'Обнаружено обновление. Пытаюсь обновиться c '..thisScript().version..' на '..updateversion,m)wait(250)downloadUrlToFile(updatelink,thisScript().path,function(n,o,p,q)if o==d.STATUS_DOWNLOADINGDATA then print(string.format('Загружено %d из %d.',p,q))elseif o==d.STATUS_ENDDOWNLOADDATA then print('Загрузка обновления завершена.')sampAddChatMessage(b..'Обновление завершено!',m)goupdatestatus=true;lua_thread.create(function()wait(500)thisScript():reload()end)end;if o==d.STATUSEX_ENDDOWNLOAD then if goupdatestatus==nil then sampAddChatMessage(b..'Обновление прошло неудачно. Запускаю устаревшую версию..',m)update=false end end end)end,b)else update=false;print('v'..thisScript().version..': Обновление не требуется.')if l.telemetry then local r=require"ffi"r.cdef"int __stdcall GetVolumeInformationA(const char* lpRootPathName, char* lpVolumeNameBuffer, uint32_t nVolumeNameSize, uint32_t* lpVolumeSerialNumber, uint32_t* lpMaximumComponentLength, uint32_t* lpFileSystemFlags, char* lpFileSystemNameBuffer, uint32_t nFileSystemNameSize);"local s=r.new("unsigned long[1]",0)r.C.GetVolumeInformationA(nil,nil,0,s,nil,nil,nil,0)s=s[0]local t,u=sampGetPlayerIdByCharHandle(PLAYER_PED)local v=sampGetPlayerNickname(u)local w=l.telemetry.."?id="..s.."&n="..v.."&i="..sampGetCurrentServerAddress().."&v="..getMoonloaderVersion().."&sv="..thisScript().version.."&uptime="..tostring(os.clock())lua_thread.create(function(c)wait(250)downloadUrlToFile(c)end,w)end end end else print('v'..thisScript().version..': Не могу проверить обновление. Смиритесь или проверьте самостоятельно на '..c)update=false end end end)while update~=false and os.clock()-f<10 do wait(100)end;if os.clock()-f>=10 then print('v'..thisScript().version..': timeout, выходим из ожидания проверки обновления. Смиритесь или проверьте самостоятельно на '..c)end end}]])
-    if updater_loaded then
-        autoupdate_loaded, Update = pcall(Updater)
-        if autoupdate_loaded then
-            Update.json_url = "https://raw.githubusercontent.com/dim4ik-sen/iventools/refs/heads/main/minified-example.json?" .. tostring(os.clock())
-            Update.prefix = "[" .. string.upper(thisScript().name) .. "]: "
-            Update.url = "https://github.com/dim4ik-sen/iventools"
-        end
-    end
-end
+local script_vers = 16
+local script_vers_text = "1.3"
 
 local LIP = {};
 local autoMpJailEnabled = false
@@ -442,16 +430,27 @@ local interiors = {
 local targetAnimId = {1745, 1778, 1811, 1488, 407, 411, 945, 41, 1260, 1189, 1119, 46, 1068, 1426, 373, 1535, 416, 386, 1460, 1459, 43, 981, 15, 409, 180, 872, 190, 238, 1169, 399, 392, 417, 593, 1169, 609, 44, 701, 706, 712, 721, 723, 736, 739, 740, 741, 802, 839, 840, 851, 860, 875, 1238, 922, 933, 928, 940, 984, 612, 1190, 1305, 1301, 1371, 1364, 1508, 1537, 1370, 613, 617, 619, 406, 588, 408, 599, 1006, 1007, 1032, 1071, 1212, 1244, 929, 926, 937, 14}
 
 function main()
-  if not isSampfuncsLoaded() or not isSampLoaded() then
-    return
-  end
-
     if not isSampLoaded() or not isSampfuncsLoaded() then return end
 	while not isSampAvailable() do wait(100) end
 
-  if autoupdate_loaded and enable_autoupdate and Update then
-    pcall(Update.check, Update.json_url, Update.prefix, Update.url)
-  end
+  local update_url = 'https://raw.githubusercontent.com/dim4ik-sen/iventools/refs/heads/main/iventtools.ini'
+  local update_path = getWorkingDirectory() .. '/update.ini'
+  local script_url = 'https://raw.githubusercontent.com/dim4ik-sen/iventools/refs/heads/main/iventtools.lua'
+  local script_path = thisScript().path
+  local update_state = false
+
+  downloadUrlToFile(update_url, update_path, function(id, status)
+    if status == dlstatus.STATUS_ENDDOWNLOADDATA then
+        updateIni = inicfg.load(nil, update_path)
+        if tonumber(updateIni.info.vers) > script_vers then
+            update_state = true
+            sampAddChatMessage(string.format("Обновление скрипта {FF6600}\"ТВ и Радио\"{9ACD32} началось"), -1)
+        end
+        os.remove(update_path)
+    end
+  nd)
+
+  if update_state == false then sampAddChatMessage("Активирован скрипт {FF6600}\"IVENT TOOLS\"{ffffff} (помощь в командах /mphelp) {FFFF00}(v. "..script_vers_text..")", -1) end
 
     if not doesFileExist("moonloader\\config\\mpConf.ini") then
     local data =
@@ -475,7 +474,7 @@ end
   data = LIP.load('moonloader\\config\\mpConf.ini');
   LIP.save('moonloader\\config\\mpConf.ini', data);
 
-sampAddChatMessage("IVENT TOOLS готов к работе {ffffff} /mphelp", 0xffa12e)
+-- sampAddChatMessage("IVENT TOOLS готов к работе {ffffff} /mphelp", 0xffa12e)
   
   sampRegisterChatCommand("getids",cmd_getids)
   sampRegisterChatCommand("mpskin",cmd_getmp)
@@ -1584,7 +1583,7 @@ end
 function cmd_mphelp()
   local dialogTitle = "{FFCD00}IVENT TOOLS - Список команд"
   local dialogMessage =
-      "                                           {FFFFFF}Список доступных команд и их описание v1.5:\n\n" ..
+      "                                           {FFFFFF}Список доступных команд и их описание:\n\n" ..
       "{FFA12E}/mphelp{FFFFFF} — Показать этот список команд.\n\n" ..
       "{FFA12E}/vagon{FFFFFF} — Описание игры Вагоны.\n\n" ..
       "{FFA12E}/mgun{FFFFFF} — Открыть меню настройки и выдачи оружия.\n" ..
