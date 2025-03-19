@@ -1,6 +1,6 @@
 script_name("IventTools")
 script_author("Crispalka")
-script_version("1.3")
+-- script_version("1.3")
 
 require('lib.moonloader')
 require('lib.sampfuncs')
