@@ -2,8 +2,8 @@ require('lib.moonloader')
 require('lib.sampfuncs')
 script_name("IventTools")
 script_name("moonloader-script-updater-example")
-script_url("https://github.com/qrlk/moonloader-script-updater")
-script_version("25.06.2022")
+script_url("https://github.com/dim4ik-sen/iventools")
+script_version("26.06.2022")
 
 local enable_autoupdate = true -- false to disable auto-update + disable sending initial telemetry (server, moonloader version, script version, samp nickname, virtual volume serial number)
 local autoupdate_loaded = false
