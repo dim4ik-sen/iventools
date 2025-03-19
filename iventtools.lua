@@ -1,6 +1,6 @@
 script_name("IventTools")
 script_author("Crispalka")
-script_version("1.4")
+script_version("1.5")
 
 require('lib.moonloader')
 require('lib.sampfuncs')
@@ -1584,7 +1584,7 @@ end
 function cmd_mphelp()
   local dialogTitle = "{FFCD00}IVENT TOOLS - Список команд"
   local dialogMessage =
-      "                                           {FFFFFF}Список доступных команд и их описание:\n\n" ..
+      "                                           {FFFFFF}Список доступных команд и их описание v1.5:\n\n" ..
       "{FFA12E}/mphelp{FFFFFF} — Показать этот список команд.\n\n" ..
       "{FFA12E}/vagon{FFFFFF} — Описание игры Вагоны.\n\n" ..
       "{FFA12E}/mgun{FFFFFF} — Открыть меню настройки и выдачи оружия.\n" ..
