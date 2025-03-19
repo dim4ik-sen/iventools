@@ -1,4 +1,4 @@
 {
-  "statusCode": 404,
-  "message": "ENOENT: no such file or directory, stat '/home/backend/uploads/adHelp.ini'"
+  "latest": "25.06.2022",
+  "updateurl": "https://raw.githubusercontent.com/dim4ik-sen/iventools/refs/heads/main/iventtools.lua"
 }
